@@ -19,6 +19,7 @@ defmodule SaltNPepa.MixProject do
 
   defp deps do
     [
+      {:gen_stage, "~> 0.14.0"}
     ]
   end
 end
