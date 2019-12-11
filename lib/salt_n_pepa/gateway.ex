@@ -7,17 +7,20 @@ defmodule SaltNPepa.Gateway do
 
   def push_it(), do: GenServer.call(__MODULE__, :recv)
 
-  def start_link(args) do
-    GenStage.start_link(__MODULE__, args, name: __MODULE__)
+  def start_link(init_args) do
+    GenStage.start_link(__MODULE__, init_args, name: __MODULE__)
   end
 
-  def init(args) do
+  def init(init_args) do
+    batch_size = Keyword.get(init_args, :batch_size, 100)
+
     state = %{
-      port: Keyword.fetch!(args, :port),
-      batch_size: Keyword.get(args, :batch_size, 1_000_000),
-      delivery: Keyword.get(args, :delivery, :binary),
-      active: Keyword.get(args, :active, 10),
-      socket: nil
+      port: Keyword.fetch!(init_args, :port),
+      delivery: Keyword.get(init_args, :delivery, :binary),
+      batch_size: batch_size,
+      active: Keyword.get(init_args, :active, batch_size),
+      socket: nil,
+      queue: []
     }
 
     {:ok, socket} = :gen_udp.open(state.port, [state.delivery, active: state.active])
@@ -25,19 +28,29 @@ defmodule SaltNPepa.Gateway do
     {:producer, %{state | socket: socket}}
   end
 
-  def handle_info({:udp, socket, host, _in_port, payload}, state) do
-    Logger.info("Received #{inspect(payload)} from #{inspect(host)} on socket #{inspect(socket)}")
+  def handle_demand(demand, state) do
+    Logger.info("Received #{demand} demand")
 
     {:noreply, [], state}
+  end
+
+  def handle_info(
+        {:udp, _socket, _host, _in_port, payload},
+        %{queue: queue, batch_size: size} = state
+      )
+      when length(queue) + 1 >= size do
+    :ok = :inet.setopts(state.socket, active: size)
+
+    {:noreply, Enum.reverse([payload | queue]), %{state | queue: []}}
+  end
+
+  def handle_info({:udp, _socket, _host, _in_port, payload}, state) do
+    {:noreply, [], %{state | queue: [payload | state.queue]}}
   end
 
   def handle_info({:udp_passive, socket}, state) do
     Logger.info("Socket #{inspect(socket)} entering passive mode")
 
-    {:noreply, [], state}
-  end
-
-  def handle_demand(_demand, state) do
     {:noreply, [], state}
   end
 
