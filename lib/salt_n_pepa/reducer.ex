@@ -11,6 +11,7 @@ defmodule SaltNPepa.Reducer do
 
   def init(init_args) do
     state = %{
+      handlers: init_args.handlers,
       subscription: init_args.subscription,
       max_demand: init_args.max,
       min_demand: init_args.min
@@ -22,14 +23,19 @@ defmodule SaltNPepa.Reducer do
      ]}
   end
 
-  def handle_events(messages, _from, state) do
-    filtered_messages =
-      Enum.filter(messages, fn %{"timestamp" => time} ->
-        rem(time, 2) == 0
-      end)
+  def handle_events(messages, _from, %{handlers: handlers} = state) do
+    reduced_messages = Enum.reduce(handlers, messages, &apply_handler/2)
 
-    {:noreply, filtered_messages, state}
+   {:noreply, reduced_messages, state}
   end
 
   def handle_info(_, state), do: {:noreply, [], state}
+
+  defp apply_handler({module, function, args}, messages) do
+    Enum.filter(messages, fn message -> apply(module, function, [message] ++ args) end)
+  end
+
+  defp apply_handler(function, messages) when is_function(function) do
+    Enum.filter(messages, fn message -> apply(function, [message]) end)
+  end
 end

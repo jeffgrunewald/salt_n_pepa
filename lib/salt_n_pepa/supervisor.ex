@@ -4,11 +4,13 @@ defmodule SaltNPepa.Supervisor do
     port: 5555,
     delivery: :binary,
     batch_size: 50,
-    dispatcher: %{
-      handler: {MyApp.Publisher, :send, []},
+    processor: %{
+      handlers: [
+        {Jason, :decode!, []}
+      ],
       max: 50,
       min: 25
-    }
+    },
     reducer: %{
       handlers: [
         {MyApp.Filter, :dedup, []}
@@ -16,10 +18,8 @@ defmodule SaltNPepa.Supervisor do
       max: 50,
       min: 25
     },
-    processor: %{
-      handlers: [
-        {Jason, :decode!, []}
-      ],
+    dispatcher: %{
+      handler: {MyApp.Publisher, :send, []},
       max: 50,
       min: 25
     }
