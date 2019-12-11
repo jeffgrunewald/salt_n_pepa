@@ -1,3 +1,5 @@
+[![Master](https://travis-ci.org/jeffgrunewald/salt_n_pepa.svg?branch=master)](https://travis-ci.org/jeffgrunewald/salt_n_pepa)
+
 # SaltNPepa
 
 A library for creating data ingestion push gateways in Elixir.
