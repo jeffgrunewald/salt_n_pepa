@@ -19,7 +19,9 @@ defmodule SaltNPepa.Supervisor do
       min: 25
     },
     dispatcher: %{
-      handler: {MyApp.Publisher, :send, []},
+      handlers: [
+        {MyApp.Publisher, :send, []}
+      ],
       max: 50,
       min: 25
     }

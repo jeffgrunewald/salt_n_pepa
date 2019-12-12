@@ -3,7 +3,6 @@ defmodule SaltNPepa.Dispatcher do
   TODO
   """
 
-  require Logger
   use GenStage
 
   def start_link(init_args) do
@@ -12,7 +11,7 @@ defmodule SaltNPepa.Dispatcher do
 
   def init(init_args) do
     state = %{
-      handler: init_args.handler,
+      handlers: init_args.handlers,
       subscription: init_args.subscription,
       max_demand: init_args.max,
       min_demand: init_args.min
@@ -24,19 +23,19 @@ defmodule SaltNPepa.Dispatcher do
      ]}
   end
 
-  def handle_events(messages, _from, %{handler: handler} = state) do
-    Enum.map(messages, &apply_handler(&1, handler))
+  def handle_events(messages, _from, %{handlers: handlers} = state) do
+    Enum.reduce(handlers, messages, &apply_handler/2)
 
     {:noreply, [], state}
   end
 
   def handle_info(_, state), do: {:noreply, [], state}
 
-  defp apply_handler(message, {module, function, args}) do
-    apply(module, function, [message] ++ args)
+  defp apply_handler({module, function, args}, messages) do
+    Enum.map(messages, fn message -> apply(module, function, [message] ++ args) end)
   end
 
-  defp apply_handler(message, function) when is_function(function) do
-    apply(function, [message])
+  defp apply_handler(function, messages) when is_function(function) do
+    Enum.map(messages, fn message -> apply(function, [message]) end)
   end
 end
