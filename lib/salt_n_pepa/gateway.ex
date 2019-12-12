@@ -29,7 +29,7 @@ defmodule SaltNPepa.Gateway do
   end
 
   def handle_demand(demand, state) do
-    Logger.info("Received #{demand} demand")
+    :ok = :inet.setopts(state.socket, active: state.batch_size)
 
     {:noreply, [], state}
   end
@@ -39,7 +39,6 @@ defmodule SaltNPepa.Gateway do
         %{queue: queue, batch_size: size} = state
       )
       when length(queue) + 1 >= size do
-    :ok = :inet.setopts(state.socket, active: size)
 
     {:noreply, Enum.reverse([payload | queue]), %{state | queue: []}}
   end
