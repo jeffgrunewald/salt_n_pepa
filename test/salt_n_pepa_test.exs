@@ -1,8 +1,4 @@
-defmodule SaltNPepaTest do
+defmodule SaltNPepa.GatewayTest do
   use ExUnit.Case
-  doctest SaltNPepa
-
-  test "greets the world" do
-    assert SaltNPepa.hello() == :world
-  end
+  doctest SaltNPepa.Gateway
 end
