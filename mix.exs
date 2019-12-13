@@ -10,6 +10,7 @@ defmodule SaltNPepa.MixProject do
       deps: deps(),
       docs: docs(),
       package: package(),
+      elixirc_paths: elixirc_paths(Mix.env()),
       description: description(),
       source_url: "https://github.com/jeffgrunewald/salt_n_pepa",
       dialyzer: [plt_file: {:no_warn, ".plt/dialyzer.plt"}]
@@ -24,14 +25,17 @@ defmodule SaltNPepa.MixProject do
 
   defp deps do
     [
-      {:credo, "~> 1.1", only: :dev, runtime: false},
+      {:dialyxir, "~> 1.0.0-rc.7", only: :dev, runtime: false},
       {:gen_stage, "~> 0.14.0"},
-      {:jason, "~> 1.1"},
+      {:jason, "~> 1.1", only: :test},
       {:ex_doc, "~> 0.21.0", only: :dev}
     ]
   end
 
   defp description(), do: "An Elixir library for creating data ingestion push gateways."
+
+  defp elixirc_paths(env) when env in [:test, :integration], do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 
   defp package() do
     [
