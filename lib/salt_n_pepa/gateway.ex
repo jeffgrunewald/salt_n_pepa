@@ -31,7 +31,7 @@ defmodule SaltNPepa.Gateway do
   def handle_demand(demand, state) do
     :ok = :inet.setopts(state.socket, active: demand)
 
-    {:noreply, [], %{batch_size: demand}}
+    {:noreply, [], %{state | batch_size: demand}}
   end
 
   def handle_info(
