@@ -1,7 +1,7 @@
 defmodule SampleProcessor do
   def wrap(message) do
     time = DateTime.utc_now()
-    {%{payload: message, timestamp: time}, time |> DateTime.to_unix}
+    {%{payload: message, timestamp: time}, time |> DateTime.to_unix()}
   end
 
   def encode({payload, time}) do
@@ -38,9 +38,9 @@ defmodule UdpSourceSocket do
 
   def handle_info(:push_message, %{socket: socket, port: port} = state) do
     length = :crypto.rand_uniform(0, 25)
-    message = :crypto.strong_rand_bytes(length) |> Base.url_encode64 |> binary_part(0, length)
+    message = :crypto.strong_rand_bytes(length) |> Base.url_encode64() |> binary_part(0, length)
 
-    :gen_udp.send(socket, {127,0,0,1}, port, message)
+    :gen_udp.send(socket, {127, 0, 0, 1}, port, message)
 
     {:noreply, state}
   end

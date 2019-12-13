@@ -26,7 +26,7 @@ defmodule SaltNPepa.Reducer do
   def handle_events(messages, _from, %{handlers: handlers} = state) do
     reduced_messages = Enum.reduce(handlers, messages, &apply_handler/2)
 
-   {:noreply, reduced_messages, state}
+    {:noreply, reduced_messages, state}
   end
 
   def handle_info(_, state), do: {:noreply, [], state}

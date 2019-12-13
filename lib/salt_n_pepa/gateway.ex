@@ -39,7 +39,6 @@ defmodule SaltNPepa.Gateway do
         %{queue: queue, batch_size: size} = state
       )
       when length(queue) + 1 >= size do
-
     {:noreply, Enum.reverse([payload | queue]), %{state | queue: []}}
   end
 

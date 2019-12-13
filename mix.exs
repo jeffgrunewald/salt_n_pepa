@@ -27,7 +27,7 @@ defmodule SaltNPepa.MixProject do
       {:credo, "~> 1.1", only: :dev, runtime: false},
       {:gen_stage, "~> 0.14.0"},
       {:jason, "~> 1.1"},
-      {:ex_doc, "~> 0.21.0", only: :dev},
+      {:ex_doc, "~> 0.21.0", only: :dev}
     ]
   end
 
