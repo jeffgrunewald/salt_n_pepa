@@ -19,6 +19,8 @@ defmodule SampleDispatcher do
   def log({payload, _time}) do
     IO.puts(payload)
   end
+
+  def log(payload), do: IO.puts(payload)
 end
 
 defmodule UdpSourceSocket do

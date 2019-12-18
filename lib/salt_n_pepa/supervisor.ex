@@ -41,7 +41,10 @@ defmodule SaltNPepa.Supervisor do
 
     children =
       [
-        {SaltNPepa.Gateway, init_args},
+        {DynamicSupervisor, strategy: :one_for_one, name: SaltNPepa.TCPSocket.AcceptorSupervisor},
+        {SaltNPepa.TCPSocket, init_args},
+        {SaltNPepa.TCPSocket.Listener, init_args},
+        # {SaltNPepa.Gateway, init_args},
         processor_spec(processor, default_demand),
         reducer_spec(reducer, processor, default_demand),
         dispatcher_spec(dispatcher, processor, reducer, default_demand)
@@ -84,7 +87,8 @@ defmodule SaltNPepa.Supervisor do
       case {processor, reducer} do
         {_, config} when config != nil -> SaltNPepa.Reducer
         {config, nil} when config != nil -> SaltNPepa.Processor
-        {nil, nil} -> SaltNPepa.Gateway
+        {nil, nil} -> SaltNPepa.TCPSocket
+        # {nil, nil} -> SaltNPepa.Gateway
       end
 
     config =

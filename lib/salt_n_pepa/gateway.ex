@@ -12,18 +12,15 @@ defmodule SaltNPepa.Gateway do
   end
 
   def init(init_args) do
-    batch_size = Keyword.get(init_args, :batch_size, 100)
-
     state = %{
       port: Keyword.fetch!(init_args, :port),
       delivery: Keyword.get(init_args, :delivery, :binary),
-      batch_size: batch_size,
-      active: Keyword.get(init_args, :active, batch_size),
+      batch_size: Keyword.get(init_args, :batch_size, 100),
       socket: nil,
       queue: []
     }
 
-    {:ok, socket} = :gen_udp.open(state.port, [state.delivery, active: state.active])
+    {:ok, socket} = :gen_udp.open(state.port, [state.delivery, active: state.batch_size])
 
     {:producer, %{state | socket: socket}}
   end
