@@ -1,6 +1,6 @@
 defmodule SaltNPepa.Gateway do
   @moduledoc """
-  TODO
+  Push it real good.
   """
   require Logger
   use GenStage
